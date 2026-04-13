@@ -1,0 +1,87 @@
+# =========================
+# FRONTEND (Next.js)
+# =========================
+
+# dependencies
+frontend/node_modules/
+
+# next build
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# next cache (important)
+frontend/.turbo/
+
+# logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# typescript
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# =========================
+# BACKEND (.NET)
+# =========================
+
+# build folders
+backend/bin/
+backend/obj/
+
+# user-specific files
+backend/*.user
+backend/*.suo
+
+# Visual Studio
+backend/.vs/
+
+# logs
+backend/*.log
+
+# =========================
+# ROOT LEVEL (fallback safety)
+# =========================
+
+node_modules/
+.next/
+bin/
+obj/
+
+# =========================
+# ENVIRONMENT FILES
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
+# OS & SYSTEM FILES
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# CERTIFICATES / KEYS
+# =========================
+
+*.pem
+*.key
+*.pfx
+
+# =========================
+# VERCEL / DEPLOYMENT
+# =========================
+
+.vercel
+
+# =========================
+# GENERAL LOGS
+# =========================
+
+*.log
+logs/
