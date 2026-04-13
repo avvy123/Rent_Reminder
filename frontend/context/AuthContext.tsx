@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (role === "Landlord") {
         router.push("/dashboard/landlord");
+        queryClient.invalidateQueries({ queryKey: ["tenants"] });
       } else if (role === "Tenant") {
         router.push("/dashboard/tenant");
       } else if (role === "Admin") {

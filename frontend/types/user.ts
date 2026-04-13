@@ -10,4 +10,5 @@ export type User = {
   propertyCount?: string;
   bhk?: string;
   city?: string
+  mobile?: string
 };

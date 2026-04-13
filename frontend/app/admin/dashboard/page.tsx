@@ -28,18 +28,8 @@ export default function AdminDashboard() {
     const approvedUsers = allUsers.filter(user => user.status === "Approved");
     const rejectedUsers = allUsers.filter(user => user.status === "Rejected");
     const propertyCount = allUsers.reduce((sum, user) => {
-      const value = user.propertyCount;
-
-      let numericValue = 0;
-
-      if (typeof value === "string" && value.includes("-")) {
-        const [min, max] = value.split("-").map(Number);
-        numericValue = (min + max) / 2; // average
-      } else {
-        numericValue = Number(value);
-      }
-
-      return sum + numericValue;
+      const value = Number(user.propertyCount);
+      return sum + (isNaN(value) ? 0 : value);
     }, 0);
     
 

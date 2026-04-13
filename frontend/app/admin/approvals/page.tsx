@@ -19,17 +19,9 @@ export default function ApprovalsPage() {
 
   const approveMutation = useMutation({
     mutationFn: approveUserApi,
-    onSuccess: (response, userId) => {
-      // 1. Update ALL USERS (your approach)
-      const newRole = response.role
-      const newStatus = response.status
-      queryClient.setQueryData(["allUsers"], (old: any = []) =>
-        old.map((u: any) =>
-          u.id === userId ? { ...u, status: newStatus, role: newRole } : u
-        )
-      );
-
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingUsers"] });
+      queryClient.invalidateQueries({ queryKey: ["allUsers"] });
     },
   });
 

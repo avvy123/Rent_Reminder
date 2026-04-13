@@ -171,16 +171,15 @@ export default function OnboardingPage() {
               />
 
               {/* PROPERTY COUNT */}
-              <Select
+              <Input 
+                type="numeric"
                 label="Number of Properties"
-                options={[
-                  { label: "1 Property", value: "1" },
-                  { label: "2 - 5 Properties", value: "2-5" },
-                  { label: "6 - 10 Properties", value: "6-10" },
-                  { label: "10+ Properties", value: "10+" },
-                ]}
+                placeholder="How many properties ?"
                 value={form.propertyCount}
-                onChange={(value) => setForm({ ...form, propertyCount: value })}
+                onInput={(e) => {
+                  e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                }}
+                onChange={(e) => setForm({ ...form, propertyCount: e.target.value })}
               />
 
               <div className="flex gap-3">

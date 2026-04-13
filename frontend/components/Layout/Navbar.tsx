@@ -16,7 +16,7 @@ export default function Navbar({ onMenuClick, title }: NavbarProps) {
   const router = useRouter();
 
   const { data: pendingUsers = [] } = useQuery({
-    queryKey: ["pending-users"],
+    queryKey: ["pendingUsers"],
     queryFn: getPendingUsers,
     enabled: user?.role === "Admin",
     staleTime: 1000 * 60 * 5

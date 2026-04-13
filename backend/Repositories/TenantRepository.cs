@@ -66,7 +66,19 @@ namespace backend.Repositories
         // =========================
         public async Task DeleteTenantAsync(Tenant tenant)
         {
-            _context.Tenants.Remove(tenant);
+            var existingTenant = await _context.Tenants
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Id == tenant.Id);
+
+            if (existingTenant == null) return;
+
+            _context.Tenants.Remove(existingTenant);
+
+            if (existingTenant.User != null)
+            {
+                _context.Users.Remove(existingTenant.User);
+            }
+
             await _context.SaveChangesAsync();
         }
     }
