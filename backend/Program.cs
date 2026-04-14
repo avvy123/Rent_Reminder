@@ -31,6 +31,8 @@ builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IRentService, RentService>();
 builder.Services.AddScoped<IAiService, AiService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<SmsService>();
+builder.Services.AddHostedService<RentReminderService>();
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");

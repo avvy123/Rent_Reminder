@@ -29,6 +29,10 @@ import {
   deleteTenant,
 } from "@/services/tenantService";
 import { useAuth } from "@/hooks/useAuth";
+import AddModal from "@/components/Modal/AddModal";
+import TenantCredentialsModal from "@/components/Modal/TenantCredentialsModal";
+import TenantCard from "@/components/Tenant/TenantCard";
+import DeleteModal from "@/components/Modal/DeleteModal";
 
 export default function TenantsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -38,10 +42,18 @@ export default function TenantsPage() {
 
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [credentialModal, setCredentialModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [editing, setEditing] = useState<Tenant | null>(null);
   const [reminderMsg, setReminderMsg] = useState("");
   const [reminderTenant, setReminderTenant] = useState<Tenant | null>(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [selectedTenantId, setSelectedTenantId] = useState<number | null>(null);
+  const [tenantCredentails, setTenantCredentials] = useState({
+    email: "",
+    name: "",
+    tempPassword: ""
+  });
 
   const [form, setForm] = useState({
     name: "",
@@ -50,6 +62,12 @@ export default function TenantsPage() {
     rentAmount: "",
     dueDate: "",
   });
+
+    useEffect(() => {
+      if (!authLoading && !user) {
+        router.push("/auth/login");
+      }
+    }, [user, authLoading]);
 
   const {
     data: tenants = [],
@@ -63,7 +81,8 @@ export default function TenantsPage() {
 
   const createMutation = useMutation({
     mutationFn: createTenant,
-    onSuccess: () => {
+    onSuccess: (res) => {
+      setTenantCredentials(res);
       queryClient.invalidateQueries({ queryKey: ["tenants"] });
       showToast("Tenant added successfully", "success");
       setShowModal(false);
@@ -85,17 +104,13 @@ export default function TenantsPage() {
   const deleteMutation = useMutation({
     mutationFn: deleteTenant,
     onSuccess: () => {
+      setDeleteModal(false);
+      setSelectedTenantId(null);
       queryClient.invalidateQueries({ queryKey: ["tenants"] });
       showToast("Tenant deleted", "success");
     },
     onError: () => showToast("Failed to delete tenant", "error"),
   });
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/auth/login");
-    }
-  }, [user, authLoading]);
 
   const openAdd = () => {
     setEditing(null);
@@ -132,15 +147,21 @@ export default function TenantsPage() {
         await updateMutation.mutateAsync({ id: editing.id, data: payload });
       } else {
         await createMutation.mutateAsync(payload);
+        setCredentialModal(true);
       }
     } finally {
       setFormLoading(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this tenant?")) return;
-    deleteMutation.mutate(id);
+  const handleDelete = (id: number) => {
+    setSelectedTenantId(id);
+    setDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedTenantId) return;
+    deleteMutation.mutate(selectedTenantId);
   };
 
   const handleReminder = async (tenant: Tenant) => {
@@ -207,149 +228,38 @@ export default function TenantsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filtered.map((tenant) => (
-            <div
-              key={tenant.id}
-              className="glass-card rounded-2xl p-5 flex flex-col"
-            >
-              {/* Top: Avatar + Name */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-500/20">
-                    {tenant.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-gray-900">
-                      {tenant.name}
-                    </h4>
-                    <p className="text-xs text-gray-500">Tenant</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => openEdit(tenant)}
-                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-primary-500"
-                    title="Edit"
-                  >
-                    <Edit3 size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(tenant.id)}
-                    className="p-2 rounded-lg hover:bg-rose-50 transition-colors text-gray-400 hover:text-rose-500"
-                    title="Delete"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Contact info */}
-              <div className="space-y-2 mb-4 flex-1">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Mail size={14} className="text-gray-400 shrink-0" />
-                  <span className="truncate">{tenant.email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Phone size={14} className="text-gray-400 shrink-0" />
-                  <span>{tenant.phone}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Calendar size={14} className="text-gray-400 shrink-0" />
-                  <span>
-                    Due:{" "}
-                    {new Date(tenant.dueDate).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              </div>
-
-              {/* Bottom: Rent + AI button */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div>
-                  <p className="text-xs text-gray-500">Monthly Rent</p>
-                  <p className="text-lg font-bold text-gray-900">
-                    ₹{tenant.rentAmount.toLocaleString()}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  icon={<Sparkles size={14} />}
-                  onClick={() => handleReminder(tenant)}
-                >
-                  Remind
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <TenantCard
+          filtered={filtered}
+          openEdit={openEdit}
+          handleDelete={handleDelete}
+          handleReminder={handleReminder}
+        />
       )}
 
       {/* Add/Edit Modal */}
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title={editing ? "Edit Tenant" : "Add New Tenant"}
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Full Name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="John Doe"
-            required
-          />
-          <Input
-            label="Email"
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder="john@example.com"
-            required
-          />
-          <Input
-            label="Phone"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            placeholder="+91 9876543210"
-            required
-          />
-          <Input
-            label="Rent Amount (₹)"
-            type="number"
-            value={form.rentAmount}
-            onChange={(e) =>
-              setForm({ ...form, rentAmount: e.target.value })
-            }
-            placeholder="15000"
-            required
-          />
-          <Input
-            label="Due Date"
-            type="date"
-            value={form.dueDate}
-            onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-            required
-          />
+      <AddModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        editing={editing}
+        form={form}
+        setForm={setForm}
+        formLoading={formLoading}
+        handleSubmit={handleSubmit}
+      />
 
-          <div className="flex justify-end gap-3 pt-2">
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={() => setShowModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" loading={formLoading}>
-              {editing ? "Update Tenant" : "Add Tenant"}
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      {/* Credentials Modal */}
+      <DeleteModal
+        deleteModal={deleteModal}
+        setDeleteModal={setDeleteModal}
+        handleDelete={handleConfirmDelete}
+      />
+
+      {/* Credentials Modal */}
+      <TenantCredentialsModal
+        credentialModal={credentialModal}
+        setCredentialModal={setCredentialModal}
+        tenantCredentials={tenantCredentails}
+      />
 
       {/* AI Reminder Modal */}
       <Modal

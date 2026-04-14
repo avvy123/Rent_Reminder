@@ -1,6 +1,7 @@
 using backend.DTOs;
 using backend.Models;
 using backend.Repositories;
+using backend.Helpers;
 
 namespace backend.Services
 {
@@ -8,16 +9,16 @@ namespace backend.Services
     {
         private readonly ITenantRepository _tenantRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IRentRepository _rentRepository; // ✅ NEW
+        private readonly IRentRepository _rentRepository;
 
         public TenantService(
             ITenantRepository tenantRepository,
             IUserRepository userRepository,
-            IRentRepository rentRepository) // ✅ NEW
+            IRentRepository rentRepository)
         {
             _tenantRepository = tenantRepository;
             _userRepository = userRepository;
-            _rentRepository = rentRepository; // ✅ NEW
+            _rentRepository = rentRepository;
         }
 
         public async Task<IEnumerable<Tenant>> GetAllTenantsAsync(int userId)
@@ -63,7 +64,7 @@ namespace backend.Services
             {
                 Name = dto.Name,
                 Email = dto.Email,
-                Phone = dto.Phone,
+                Phone = PhoneHelper.FormatIndianNumber(dto.Phone),
                 RentAmount = dto.RentAmount,
                 DueDate = dto.DueDate, // e.g. 10th of every month
                 LandlordId = landlordId,
@@ -91,10 +92,10 @@ namespace backend.Services
                 // Month grouping
                 Month = currentDate.ToString("yyyy-MM"),
 
-                // ✅ ACTUAL DATE (fix for your issue)
+                // ACTUAL DATE
                 RentDate = currentDate,
 
-                // ✅ Correct due date
+                // due date
                 DueDate = dueDate,
 
                 Status = RentStatus.Unpaid
@@ -120,7 +121,7 @@ namespace backend.Services
 
             if (dto.Name != null) tenant.Name = dto.Name;
             if (dto.Email != null) tenant.Email = dto.Email;
-            if (dto.Phone != null) tenant.Phone = dto.Phone;
+            if (dto.Phone != null) tenant.Phone = PhoneHelper.FormatIndianNumber(dto.Phone);
             if (dto.RentAmount.HasValue) tenant.RentAmount = dto.RentAmount.Value;
             if (dto.DueDate.HasValue) tenant.DueDate = dto.DueDate.Value;
 
