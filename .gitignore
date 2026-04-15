@@ -41,6 +41,10 @@ backend/.vs/
 # logs
 backend/*.log
 
+# app settings
+backend/appsettings.json
+backend/appsettings.Development.json
+
 # =========================
 # ROOT LEVEL (fallback safety)
 # =========================
