@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getTenants } from "@/services/tenantService";
 import { useAuth } from "@/hooks/useAuth";
+import { getTenantRentRecord } from "@/services/rentService";
 
 export default function LandlordDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -29,10 +30,18 @@ export default function LandlordDashboard() {
     staleTime: 1000 * 60 * 5,
   });
 
+  const {
+    data: landlordTenantRentRecord = [],
+  } = useQuery({
+    queryKey: ["getTenantRentRecord"],
+    queryFn: getTenantRentRecord,
+    enabled: !!user,
+    staleTime: 1000 * 60 * 5,
+  });
+
   const totalTenants = tenants.length;
-  const allRents = tenants.flatMap((t) => t.rents || []);
-  const paidRents = allRents.filter((r) => r.status === 1).length;
-  const unpaidRents = allRents.filter((r) => r.status === 0).length;
+  const paidRents = landlordTenantRentRecord.filter((r) => r.status === 1).length;
+  const unpaidRents = landlordTenantRentRecord.filter((r) => r.status === 0).length;
   const totalRevenue = tenants.reduce((sum, t) => sum + t.rentAmount, 0);
 
   if (authLoading || loading) {
@@ -129,10 +138,13 @@ export default function LandlordDashboard() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {tenants.slice(0, 5).map((tenant) => {
-                  const latestRent =
-                    tenant.rents && tenant.rents.length > 0
-                      ? tenant.rents[0]
-                      : null;
+
+                  const rent = landlordTenantRentRecord
+                    ?.filter((r) => r.tenantId === tenant.id)
+                    .sort(
+                      (a, b) =>
+                        new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
+                    )[0];
 
                   return (
                     <tr
@@ -172,22 +184,20 @@ export default function LandlordDashboard() {
                       </td>
 
                       <td className="px-6 py-4">
-                        {latestRent ? (
+                        {rent ? (
                           <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                              latestRent.status === 1
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${rent.status === 1
                                 ? "bg-emerald-50 text-emerald-700"
                                 : "bg-rose-50 text-rose-700"
-                            }`}
+                              }`}
                           >
                             <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                latestRent.status === 1
+                              className={`w-1.5 h-1.5 rounded-full ${rent.status === 1
                                   ? "bg-emerald-500"
                                   : "bg-rose-500"
-                              }`}
+                                }`}
                             />
-                            {latestRent.status === 1 ? "Paid" : "Unpaid"}
+                            {rent.status === 1 ? "Paid" : "Unpaid"}
                           </span>
                         ) : (
                           <span className="text-xs text-gray-400">

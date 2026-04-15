@@ -24,6 +24,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IRentRepository, RentRepository>();
+builder.Services.AddScoped<PaymentRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -33,6 +34,7 @@ builder.Services.AddScoped<IAiService, AiService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<SmsService>();
 builder.Services.AddHostedService<RentReminderService>();
+builder.Services.AddScoped<PaymentService>();
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");

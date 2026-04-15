@@ -51,5 +51,13 @@ namespace backend.Repositories
             await _context.Rents.AddAsync(rent);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Rent>> GetLandlordRents(int landlordId)
+        {
+            return await _context.Rents
+                .Include(r => r.Tenant)
+                .Where(r => r.Tenant.LandlordId == landlordId)
+                .ToListAsync();
+        }
     }
 }

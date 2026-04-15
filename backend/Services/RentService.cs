@@ -74,5 +74,10 @@ namespace backend.Services
 
             return await _rentRepository.UpdateRentAsync(rent);
         }
+
+        public async Task<List<Rent>> GetLandlordRents(int landlordId)
+        {
+            return await _rentRepository.GetLandlordRents(landlordId);
+        }
     }
 }

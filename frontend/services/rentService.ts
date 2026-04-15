@@ -4,6 +4,9 @@ import { fetchClient } from "./fetchClient";
 export const getRentsByTenant = (tenantId: number): Promise<Rent[]> =>
   fetchClient(`/rents/tenant/${tenantId}`);
 
+export const getTenantRentRecord = (): Promise<Rent[]> =>
+  fetchClient(`/rents/landlord-rents`);
+
 export const getAllRents = (): Promise<Rent[]> =>
   fetchClient("/rents");
 

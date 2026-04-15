@@ -10,6 +10,7 @@ namespace backend.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<Rent> Rents { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

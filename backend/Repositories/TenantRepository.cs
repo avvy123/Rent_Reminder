@@ -13,9 +13,7 @@ namespace backend.Repositories
             _context = context;
         }
 
-        // =========================
         // GET ALL TENANTS (BY LANDLORD)
-        // =========================
         public async Task<IEnumerable<Tenant>> GetAllTenantsAsync(int landlordId)
         {
             return await _context.Tenants
@@ -24,9 +22,7 @@ namespace backend.Repositories
                 .ToListAsync();
         }
 
-        // =========================
         // GET TENANT BY ID (BY LANDLORD)
-        // =========================
         public async Task<Tenant?> GetTenantByIdAsync(int id, int landlordId)
         {
             return await _context.Tenants
@@ -41,9 +37,7 @@ namespace backend.Repositories
                 .FirstOrDefaultAsync(t => t.UserId == userId);
         }
 
-        // =========================
         // CREATE TENANT
-        // =========================
         public async Task<Tenant> CreateTenantAsync(Tenant tenant)
         {
             _context.Tenants.Add(tenant);
@@ -51,9 +45,7 @@ namespace backend.Repositories
             return tenant;
         }
 
-        // =========================
         // UPDATE TENANT
-        // =========================
         public async Task<Tenant> UpdateTenantAsync(Tenant tenant)
         {
             _context.Tenants.Update(tenant);
@@ -61,9 +53,7 @@ namespace backend.Repositories
             return tenant;
         }
 
-        // =========================
         // DELETE TENANT
-        // =========================
         public async Task DeleteTenantAsync(Tenant tenant)
         {
             var existingTenant = await _context.Tenants

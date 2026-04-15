@@ -36,9 +36,7 @@ namespace backend.Services
             return await _tenantRepository.GetTenantByUserIdAsync(userId);
         }
 
-        // =========================
         // CREATE TENANT + AUTO RENT
-        // =========================
         public async Task<TenantCreatedResponseDto> CreateTenantAsync(CreateTenantDto dto, int landlordId)
         {
             // 1. Generate password
@@ -146,15 +144,14 @@ namespace backend.Services
             return tenant.Rents.Select(r => new TenantRentDto
             {
                 Id = r.Id,
+                TenantId = r.TenantId,
                 Amount = tenant.RentAmount,
                 DueDate = r.DueDate,
                 Status = r.Status.ToString()
             });
         }
 
-        // =========================
         // PASSWORD GENERATOR
-        // =========================
         private string GeneratePassword()
         {
             return Guid.NewGuid().ToString("N")[..8];

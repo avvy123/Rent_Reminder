@@ -21,9 +21,7 @@ namespace backend.Controllers
         private int GetUserId() =>
             int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // =========================
         // GET ALL TENANTS
-        // =========================
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -43,9 +41,7 @@ namespace backend.Controllers
             return Ok(result);
         }
 
-        // =========================
         // GET BY ID
-        // =========================
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -66,21 +62,17 @@ namespace backend.Controllers
             });
         }
 
-        // =========================
         // CREATE TENANT (FIXED)
-        // =========================
         [HttpPost]
         public async Task<IActionResult> Create(CreateTenantDto dto)
         {
             var result = await _tenantService.CreateTenantAsync(dto, GetUserId());
 
-            // 🔥 IMPORTANT: returns password ONCE
+            // IMPORTANT: returns password ONCE
             return Ok(result);
         }
 
-        // =========================
         // UPDATE TENANT
-        // =========================
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateTenantDto dto)
         {
@@ -98,9 +90,7 @@ namespace backend.Controllers
             });
         }
 
-        // =========================
         // DELETE TENANT
-        // =========================
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -18,7 +18,7 @@ namespace backend.Controllers
             _rentService = rentService;
         }
 
-        // ✅ Extract User ID from token
+        // Extract User ID from token
         private int GetUserId()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -43,7 +43,7 @@ namespace backend.Controllers
             }
         }
 
-        // 📥 GET: api/rents/tenant/{tenantId}
+        // api/rents/tenant/{tenantId}
         [HttpGet("tenant/{tenantId}")]
         public async Task<IActionResult> GetForTenant(int tenantId)
         {
@@ -51,7 +51,7 @@ namespace backend.Controllers
             {
                 var rents = await _rentService.GetRentsForTenantAsync(tenantId, GetUserId());
 
-                // ✅ Map to DTO
+                // Map to DTO
                 var response = rents.Select(r => new RentResponseDto
                 {
                     Id = r.Id,
@@ -69,7 +69,7 @@ namespace backend.Controllers
             }
         }
 
-        // ➕ POST: api/rents
+        // api/rents
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateRentDto dto)
         {
@@ -80,7 +80,7 @@ namespace backend.Controllers
             {
                 var rent = await _rentService.CreateRentAsync(dto, GetUserId());
 
-                // ✅ Map to DTO
+                // Map to DTO
                 var response = new RentResponseDto
                 {
                     Id = rent.Id,
@@ -102,7 +102,7 @@ namespace backend.Controllers
             }
         }
 
-        // ✏️ PUT: api/rents/{id}
+        // api/rents/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateRentDto dto)
         {
@@ -116,7 +116,7 @@ namespace backend.Controllers
                 if (rent == null)
                     return NotFound(new { message = "Rent not found or unauthorized" });
 
-                // ✅ Map to DTO
+                // Map to DTO
                 var response = new RentResponseDto
                 {
                     Id = rent.Id,
@@ -132,6 +132,16 @@ namespace backend.Controllers
             {
                 return StatusCode(500, $"Error updating rent: {ex.Message}");
             }
+        }
+
+        [HttpGet("landlord-rents")]
+        public async Task<IActionResult> GetLandlordRents()
+        {
+            var userId = GetUserId();
+
+            var rents = await _rentService.GetLandlordRents(userId);
+
+            return Ok(rents);
         }
     }
 }

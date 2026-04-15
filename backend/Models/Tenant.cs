@@ -14,12 +14,12 @@ namespace backend.Models
         public int LandlordId { get; set; }
         public int UserId { get; set; }
 
-        // 🔥 FIX: prevent JSON cycle
+        // prevent JSON cycle
         public User? User { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // 🔥 OPTIONAL FIX (safe)
+        // OPTIONAL FIX (safe)
         public ICollection<Rent> Rents { get; set; } = new List<Rent>();
     }
 }

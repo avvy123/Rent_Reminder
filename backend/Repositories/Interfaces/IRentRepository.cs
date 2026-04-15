@@ -10,5 +10,6 @@ namespace backend.Repositories
         Task<Rent> CreateRentAsync(Rent rent);
         Task<Rent> UpdateRentAsync(Rent rent);
         Task AddAsync(Rent rent);
+        Task<List<Rent>> GetLandlordRents(int landlordId);
     }
 }

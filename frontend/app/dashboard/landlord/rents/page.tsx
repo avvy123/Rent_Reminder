@@ -305,6 +305,7 @@ export default function RentsPage() {
                                 rent.status === 1 ? "secondary" : "success"
                               }
                               onClick={() => handleToggleStatus(rent)}
+                              disabled={rent.status === 1}
                             >
                               {rent.status === 1
                                 ? "Mark Unpaid"

@@ -27,7 +27,7 @@ export default function ProfilePage() {
     staleTime: 1000 * 60 * 5
   });
 
-  const currentRent = rents.find((r) => r.status !== 1);
+  const currentRent = rents.find((r) => r.status !== "Paid");
 
   if (!user) return null;
 
@@ -71,14 +71,14 @@ export default function ProfilePage() {
                 {/* STATUS FIX */}
                 <p
                   className={`mt-2 font-medium ${
-                    currentRent.status === 1
+                    currentRent.status === "Paid"
                       ? "text-green-600"
                       : new Date(currentRent.dueDate) < new Date()
                       ? "text-red-600"
                       : "text-yellow-600"
                   }`}
                 >
-                  {currentRent.status === 1
+                  {currentRent.status === "Paid"
                     ? "Paid"
                     : new Date(currentRent.dueDate) < new Date()
                     ? "Overdue"
